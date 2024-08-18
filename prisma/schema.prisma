@@ -44,6 +44,7 @@ model Invoices {
   customers_id String
   customers Customers @relation(fields: [customers_id], references: [id])
   payments Payments[]
+  add_by String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
