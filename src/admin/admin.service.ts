@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
 import { PasswordService } from 'src/utils/hash';
+import { AdminEntity } from './entity/admin.entity';
 
 @Injectable()
 export class AdminService {
@@ -37,16 +38,16 @@ export class AdminService {
         }
     }
 
-    public async findByEmail(email: string): Promise<any> {
+    public async findByEmail(email: string): Promise<AdminEntity | boolean> {
         try {
-            const data = this.databaseService.admin.findUnique({
+            const data: any = this.databaseService.admin.findUnique({
                 where: {
                     email,
                 }
             })
 
             if(!data) {
-                return null
+                return false
             }
 
             return data

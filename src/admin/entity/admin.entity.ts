@@ -1,6 +1,6 @@
 import { $Enums, Admin } from "@prisma/client";
 
-class AdminEntity implements Admin {
+export class AdminEntity implements Admin {
     id: string
     email: string
     password: string
