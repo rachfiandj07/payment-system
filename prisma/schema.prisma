@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id      String   @id @default(uuid())
+  email   String   @unique
+  password String
+  role    Role     @default(FINANCE_MANAGER)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("admin")
+}
+
+enum Role {
+  FINANCE_MANAGER
+  ADMIN
+}
+
+enum InvoiceStatus {
+  PAID
+  PENDING
+  PARTIALLY_PAID
+}
+
+model Invoices {
+  id      String   @id @default(uuid())
+  invoice_date DateTime @default(now())
+  invoice_status InvoiceStatus @default(PENDING)
+  due_date  DateTime
+  amount_due DateTime @default(now())
+  customers_id String
+  customers Customers @relation(fields: [customers_id], references: [id])
+  payments Payments[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("invoices")
+}
+
+enum PaymentStatus {
+  WAITING
+  EXPIRED
+  SUCCESS
+}
+
+model Payments {
+  id      String   @id @default(uuid())
+  status PaymentStatus
+  payment_link String
+  invoices_id String
+  invoices Invoices @relation(fields: [invoices_id], references: [id])
+  expired_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("payments")
+}
+
+model Customers {
+  id      String   @id @default(uuid())
+  name    String
+  email   String   @unique
+  invoices Invoices[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("customers")
+}
