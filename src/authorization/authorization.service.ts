@@ -36,7 +36,7 @@ export class AuthorizationService {
                 };
             }
 
-            const token = await this.generateToken()
+            const token = await this.generateToken(data.email, data.id, data.role)
     
             return {
                 statusCode: HttpStatus.OK,
@@ -53,13 +53,13 @@ export class AuthorizationService {
         }
     }
 
-    private async generateToken() {
+    private async generateToken(email: string, id: string, role: string) {
         const teamId: string = 'ARATRXM6V';
         const audience: string = 'ara-research';
         const subject: string = 'ara.research.app'
     
         try {
-          const privateKey = await this.configService.getOrThrow('CLIENT_CREDENTIALS')
+          const privateKey = await this.configService.get('CLIENT_CREDENTIALS')
     
           const currentTime = Math.floor(Date.now() / 1000);
           const expirationTime = currentTime + 15777000; // 6 months
@@ -70,6 +70,9 @@ export class AuthorizationService {
             exp: expirationTime,
             aud: audience,
             sub: subject,
+            email: email,
+            id: id,
+            role: role
           };
     
           const token: any = this.jwtService.sign(payload, {
