@@ -33,14 +33,16 @@ enum InvoiceStatus {
   PAID
   PENDING
   PARTIALLY_PAID
+  ON_DUE_DATE
 }
 
 model Invoices {
   id      String   @id @default(uuid())
   invoice_date DateTime @default(now())
+  invoice_id String
   invoice_status InvoiceStatus @default(PENDING)
   due_date  DateTime
-  amount_due DateTime @default(now())
+  amount_due String 
   customers_id String
   customers Customers @relation(fields: [customers_id], references: [id])
   payments Payments[]

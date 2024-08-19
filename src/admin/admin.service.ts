@@ -32,6 +32,7 @@ export class AdminService {
             return {
                 statusCode: HttpStatus.CREATED,
                 message: 'Admin created',
+                data: {}
             }
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.FORBIDDEN);
