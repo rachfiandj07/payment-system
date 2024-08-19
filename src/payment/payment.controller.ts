@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { JwtGuard } from 'src/authorization/guard/jwt.guard';
 import { RequestContext } from 'src/utils/context';
@@ -13,5 +13,11 @@ export class PaymentController {
     @UseGuards(JwtGuard)
     create(@Body() createPaymentLinkDTO: CreatePaymentLinkDTO, @RequestContext() context: ContextPayload) {
       return this.paymentService.generate(createPaymentLinkDTO, context);
+    }
+
+    @Get('/verify')
+    paid(@Query() query: any){
+      const { user, amount, expires, invoices_id, signature } = query;
+      return this.paymentService.payment(user, amount, expires, invoices_id, signature)
     }
 }

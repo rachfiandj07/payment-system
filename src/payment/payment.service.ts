@@ -16,11 +16,11 @@ export class PaymentService {
         private readonly invoiceService: InvoiceService,
         private readonly configService: ConfigService
     ) {}
-    private async generatePaymentLink(user_id: string, amount: string, expiration_time: number, baseUrl: string): Promise<string> {
+    private async generatePaymentLink(user_id: string, amount: string, expiration_time: number, baseUrl: string, invoices_id: string): Promise<string> {
         try {
-            const dataToHash = `${user_id}|${amount}|${expiration_time}`;
-            const hash = await this.hashService.hash(dataToHash);
-            const paymentLink = `${baseUrl}/payment/verify?user=${encodeURIComponent(user_id)}&amount=${amount}&expires=${expiration_time}&signature=${encodeURIComponent(hash)}`;
+            const dataToHash = `${user_id}|${amount}|${expiration_time}|${invoices_id}`;
+            const hash = await this.hashService.hashGenerateLink(dataToHash);
+            const paymentLink = `${baseUrl}/payment/verify?user=${encodeURIComponent(user_id)}&amount=${amount}&expires=${expiration_time}&invoices_id=${invoices_id}&signature=${encodeURIComponent(hash)}`;
             return paymentLink
         } catch (error) {
             return error.message
@@ -39,7 +39,7 @@ export class PaymentService {
 
             const base_url = context.baseUrl + '/' + this.configService.getOrThrow('PAYMENT_PREFIX')
             const expirationTime = Date.now() + 60 * 60 * 1000;
-            const linkPromise = this.generatePaymentLink(data.customers_id, data.amount_due, expirationTime, base_url);
+            const linkPromise = this.generatePaymentLink(data.customers_id, data.amount_due, expirationTime, base_url, data.id);
             const paymentData = {
               status: $Enums.PaymentStatus.WAITING,
               payment_link: '', 
@@ -68,13 +68,66 @@ export class PaymentService {
             throw new HttpException(error.message, HttpStatus.FORBIDDEN);
         }
     }
-    // public async verifyPaymentLink(user_id: string, amount: string, expires: string, signature: string): Promise<boolean> {
-    //     const dataToVerify = `${user_id}|${amount}|${expires}`;
-    //     const hashToVerify = await this.hashService.hash(dataToVerify);
-    //     // Check if the provided signature matches the hash of the data
-    //     if (await this.hashService.compare(dataToVerify, signature) && Date.now() <= parseInt(expires)) {
-    //       return true;
-    //     }
-    //     return false;
-    //   }
+
+    public async payment(user_id: string, amount: string, expires: string, invoices_id: string, signature: string): Promise<any> {
+        try {
+            const expiresTimestamp = parseInt(expires, 10);
+            const dataToHash = `${user_id}|${amount}|${expiresTimestamp}|${invoices_id}`;
+            const expectedHash = await this.hashService.hashGenerateLink(dataToHash);
+            const isSignatureValid = expectedHash === signature;
+            const isNotExpired = Date.now() <= expiresTimestamp;
+            if (isSignatureValid && isNotExpired) {                
+                const invoices = await this.databaseService.invoices.findMany({
+                    where: {
+                      payments: {
+                        some: {
+                          invoices_id: invoices_id,
+                        },
+                      },
+                    },
+                    select: {
+                      id: true,
+                      invoice_status: true,
+                      amount_due: true,
+                    },
+                  });
+
+                await Promise.all([
+                    this.databaseService.payments.updateMany({
+                        where: { invoices_id: invoices_id as string },
+                        data: {
+                            status: $Enums.PaymentStatus.SUCCESS
+                        }
+                    }),
+                    this.databaseService.invoices.update({
+                        where: { id: invoices[0].id },
+                        data: {
+                            invoice_status: $Enums.InvoiceStatus.PAID
+                        }
+                    })
+                ])
+
+                return {
+                    statusCode: HttpStatus.OK,
+                    message: `Payment of $${invoices[0].amount_due} for Invoice ${invoices_id} completed successfully`,
+                    data: {}
+                }
+            } else if (isSignatureValid && !isNotExpired) {
+                return {
+                    statusCode: HttpStatus.OK,
+                    message: 'Payment link has expired, no payment can be made',
+                    data: {}
+                }
+            } else {
+                return {
+                    statusCode: HttpStatus.BAD_REQUEST,
+                    message: 'Failed to verify',
+                    data: {}
+                }
+            }
+
+          } catch (error) {
+            throw new HttpException(error.message, HttpStatus.FORBIDDEN);
+        }
+    }
 }
