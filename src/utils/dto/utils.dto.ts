@@ -13,4 +13,5 @@ export interface HeadersContextPayload {
 export interface ContextPayload {
     user: UserContextPayload
     header: HeadersContextPayload
+    baseUrl: string
 }

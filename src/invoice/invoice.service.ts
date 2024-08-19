@@ -25,7 +25,6 @@ export class InvoiceService {
     }
 
     public async create(context: ContextPayload, createInvoiceDTO: CreateInvoiceDTO) {
-        console.log(createInvoiceDTO)
         try {
             if (createInvoiceDTO.customers_id !== undefined) {
                 const data: any = await this.customerService.findByID(createInvoiceDTO.customers_id)
