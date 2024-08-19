@@ -3,10 +3,17 @@ import { CustomerService } from 'src/customer/customer.service';
 import { DatabaseService } from 'src/database/database.service';
 import { ContextPayload } from 'src/utils/dto/utils.dto';
 import { CreateInvoiceDTO } from './dto/invoice.dto';
+import { $Enums } from '@prisma/client';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class InvoiceService {
-    constructor(private readonly databaseService: DatabaseService, private readonly customerService: CustomerService) {}
+    constructor(
+        @InjectQueue('invoicecheck') private invoiceQueue: Queue,
+        private readonly databaseService: DatabaseService, 
+        private readonly customerService: CustomerService
+    ) {}
 
     public async findByID(id: string): Promise<Record<string, string> | Boolean> {
         try {
@@ -38,6 +45,17 @@ export class InvoiceService {
                 }
                 const invoiceDate = this.transformDate(createInvoiceDTO.invoice_date)
                 const due_date = this.transformDate(createInvoiceDTO.due_date)
+                const expirationTime: number = due_date.getTime()
+
+                if (expirationTime < Date.now()) {
+                 return {
+                     statusCode: HttpStatus.BAD_REQUEST,
+                     message: 'Due date cant be less than this time',
+                     data: {}
+                 }
+                }
+ 
+                const delay: number = expirationTime - Date.now()
                 const invoiceId: string = await this.generateInvoiceID(data.id)
  
                  const invoice = {
@@ -51,6 +69,18 @@ export class InvoiceService {
                  }
                  const invoiceData = await this.databaseService.invoices.create({ data: invoice})
 
+                 await this.invoiceQueue.add(
+                    'expiration-invoice-check', 
+                    {
+                        invoiceData
+                    },
+                    { 
+                        delay,
+                        attempts: 5,
+                        backoff: 5000,
+                        priority: 1
+                    }
+                )
                 return {
                     statusCode: HttpStatus.CREATED,
                     message: 'Invoices created',
@@ -69,6 +99,17 @@ export class InvoiceService {
                 */
                const invoiceDate = this.transformDate(createInvoiceDTO.invoice_date)
                const due_date = this.transformDate(createInvoiceDTO.due_date)
+               const expirationTime: number = due_date.getTime()
+
+               if (expirationTime < Date.now()) {
+                return {
+                    statusCode: HttpStatus.BAD_REQUEST,
+                    message: 'Due date cant be less than this time',
+                    data: {}
+                }
+               }
+
+               const delay: number = expirationTime - Date.now()
                const invoiceId: string = await this.generateInvoiceID(data.id)
 
                 const invoice = {
@@ -82,6 +123,18 @@ export class InvoiceService {
                 }
 
                 const invoiceData = await this.databaseService.invoices.create({ data: invoice})
+                await this.invoiceQueue.add(
+                    'expiration-invoice-check', 
+                    {
+                        invoiceData
+                    },
+                    { 
+                        delay,
+                        attempts: 5,
+                        backoff: 5000,
+                        priority: 1
+                    }
+                )
                 return {
                     statusCode: HttpStatus.CREATED,
                     message: 'Invoices created',
@@ -101,8 +154,6 @@ export class InvoiceService {
 
     private transformDate(inputDate: string): Date {
         const date = new Date(inputDate);
-
-        // Set current time (hours, minutes, seconds, milliseconds) if needed
         const now = new Date();
         date.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
       
@@ -119,7 +170,7 @@ export class InvoiceService {
         const minutes = String(date.getMinutes()).padStart(2, '0');
         const seconds = String(date.getSeconds()).padStart(2, '0');
     
-        const invoiceId = `INV-${customer_id}-${year}${month}${day}${hours}${minutes}${seconds}`;
+        const invoiceId = `INV${customer_id}${year}${month}${day}${hours}${minutes}${seconds}`.toUpperCase().replace(/-/g, '');
       
         return invoiceId;
     }
@@ -127,7 +178,7 @@ export class InvoiceService {
     public async getInvoice(    
         query: {
         search?: string;
-        status?: 'PAID' | 'PENDING' | 'PARTIALLY_PAID' | 'ON_DUE_DATE';
+        status?: $Enums.InvoiceStatus;
       }) {
         const { search, status } = query;
     

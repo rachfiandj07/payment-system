@@ -6,10 +6,13 @@ import { CreatePaymentLinkDTO } from './dto/payment.dto';
 import { ConfigService } from '@nestjs/config';
 import { ContextPayload } from 'src/utils/dto/utils.dto';
 import { $Enums } from '@prisma/client';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class PaymentService {
     constructor(
+        @InjectQueue('paymentcheck') private paymentQueue: Queue,
         private readonly databaseService: DatabaseService,
         private readonly hashService: HashService,
         private readonly invoiceService: InvoiceService,
@@ -38,7 +41,13 @@ export class PaymentService {
 
             const base_url = context.baseUrl + '/' + this.configService.getOrThrow('PAYMENT_PREFIX')
             const expirationTime = Date.now() + 60 * 60 * 1000;
+            /* 
+                -> testing out expiration to message broker
+
+                const expirationTime = Date.now() + 60 * 1000; 
+            */
             const linkPromise = this.generatePaymentLink(data.customers_id, data.amount_due, expirationTime, base_url, data.id);
+            const delay = expirationTime - Date.now();
             const paymentData = {
               status: $Enums.PaymentStatus.WAITING,
               payment_link: '', 
@@ -58,6 +67,18 @@ export class PaymentService {
               data: paymentData
             });
 
+            await this.paymentQueue.add(
+                'expiration-payment-check', 
+                {
+                    savedPayment
+                },
+                { 
+                    delay,
+                    attempts: 5,
+                    backoff: 5000,
+                    priority: 1
+                }
+            )
             return {
                 statusCode: HttpStatus.CREATED,
                 message: 'Payment link created',
