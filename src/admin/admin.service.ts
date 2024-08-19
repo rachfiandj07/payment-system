@@ -1,14 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
-import { PasswordService } from 'src/utils/hash';
+import { HashService } from 'src/utils/hash';
 import { AdminEntity } from './entity/admin.entity';
 
 @Injectable()
 export class AdminService {
     constructor(
         private readonly databaseService: DatabaseService,
-        private readonly passwordService: PasswordService
+        private readonly passwordService: HashService
     ) {}
 
     public async create(createAdminDTO: Prisma.AdminCreateInput): Promise<any | HttpException> {
@@ -22,7 +22,7 @@ export class AdminService {
                 };
             }
 
-            const hashedPassword = await this.passwordService.hashPassword(createAdminDTO.password);
+            const hashedPassword = await this.passwordService.hash(createAdminDTO.password);
             const admin = {
                 email: createAdminDTO.email,
                 password: hashedPassword

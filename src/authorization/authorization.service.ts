@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PasswordService } from 'src/utils/hash';
+import { HashService } from 'src/utils/hash';
 import { LoginAdminDTO } from './dto/authorization.dto';
 import { AdminService } from 'src/admin/admin.service';
 import { ConfigService } from '@nestjs/config';
@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthorizationService {
     constructor(
-        private readonly passwordService: PasswordService,
+        private readonly hashService: HashService,
         private readonly jwtService: JwtService,
         private readonly adminService: AdminService,
         private readonly configService: ConfigService
@@ -26,7 +26,7 @@ export class AuthorizationService {
                 };
             }
     
-            const comparePasswords = await this.passwordService.comparePasswords(loginAdminDTO.password, data.password)
+            const comparePasswords = await this.hashService.compare(loginAdminDTO.password, data.password)
     
             if (!comparePasswords) {
                 return {
