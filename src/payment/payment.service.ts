@@ -5,7 +5,6 @@ import { HashService } from 'src/utils/hash';
 import { CreatePaymentLinkDTO } from './dto/payment.dto';
 import { ConfigService } from '@nestjs/config';
 import { ContextPayload } from 'src/utils/dto/utils.dto';
-import { PaymentEntity } from './entity/payment.entity';
 import { $Enums } from '@prisma/client';
 
 @Injectable()

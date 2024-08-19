@@ -122,5 +122,37 @@ export class InvoiceService {
         const invoiceId = `INV-${customer_id}-${year}${month}${day}${hours}${minutes}${seconds}`;
       
         return invoiceId;
-    } 
+    }
+
+    public async getInvoice(    
+        query: {
+        search?: string;
+        status?: 'PAID' | 'PENDING' | 'PARTIALLY_PAID' | 'ON_DUE_DATE';
+      }) {
+        const { search, status } = query;
+    
+        const where: any = {};
+    
+        if (search) {
+          where.OR = [
+            { invoice_id: { contains: search, mode: 'insensitive' } },
+            { customers: { name: { contains: search, mode: 'insensitive' } } }
+          ];
+        }
+    
+        if (status) {
+          where.invoice_status = status;
+        }
+
+        const data = await this.databaseService.invoices.findMany({
+            where: Object.keys(where).length ? where : undefined,
+            include: { customers: true },
+        });
+        
+        return {
+            statusCode: HttpStatus.FOUND,
+            message: '',
+            data: data
+        }
+    }
 }
