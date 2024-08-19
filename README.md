@@ -1,73 +1,120 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Ara Research
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is a NestJS project built with TypeScript for Micro Lending Company's Accounts Receivable Management System. Build the backend API services for a micro-lending company's web application, optimizing their accounts receivable
+management.
+
+## Features
+
+- **NestJS**: A progressive Node.js framework for building server-side applications.
+- **TypeScript**: A typed superset of JavaScript that compiles to plain JavaScript.
+- **Prisma**: ORM for database access.
+- **BullMQ**: For handling background jobs and queues.
+- **Redis**: In-memory data structure store used for caching and queuing.
+- **Docker**: For containerizing the application and its dependencies.
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Testing](#testing)
+
+## Prerequisites
+
+Before you begin, ensure you have met the following requirements:
+
+- **Node.js**: Version 18.x or later
+- **Docker**: Version 20.x or later
+- **NPM**: Version 9.x or later
+- **Docker Compose**: Version 1.27.x or later
 
 ## Installation
 
+1. **Unzip the folder**
+
+    - Windows
+
+      ```bash
+      powershell -command "Expand-Archive -Path 'filename.zip' -DestinationPath 'destination\folder'"
+      ```
+    - Mac
+
+      ```bash
+      unzip filename.zip
+      ```
+
+2. **Install dependencies:**
+
+    ```bash
+    npm install
+    ```
+
+3. **Setup environment variables:**
+
+   Create a `.env` file in the root directory and configure your environment variables:
+
+    ```dotenv
+    DATABASE_URL=postgres://user:password@localhost:5432/yourdatabase
+    REDIS_HOST=localhost
+    REDIS_PORT=6379
+    ```
+
+4. **Run Docker Compose:**
+
+    To start the project with Docker, run:
+
+    ```bash
+    docker-compose up -d
+    ```
+
+## Configuration
+
+### Configuration Files
+
+- **`src/config`**: Contains configuration files for various services.
+- **`.env`**: Environment variables used by the application.
+
+### Configuration Parameters
+
+- **Database**: Configured via `DATABASE_URL` in the `.env` file.
+- **Redis**: Configured via `REDIS_HOST` and `REDIS_PORT` in the `.env` file.
+
+## Usage
+
+1. **Run the application locally:**
+
+    ```bash
+    npm run start
+    ```
+
+2. **Access the application:**
+
+    Navigate to `http://localhost:3000` in your browser or use tools like `curl` or Postman to interact with your API.
+
+3. **Run the application in development mode:**
+
+    ```bash
+    npm run start:dev
+    ```
+
+4. **Build the application:**
+
+    ```bash
+    npm run build
+    ```
+
+5. **Run tests:**
+
+    ```bash
+    npm run test
+    ```
+
+## Testing
+
+The project uses Jest for testing. To run tests, use:
+
 ```bash
-$ npm install
-```
-
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+npm run test
