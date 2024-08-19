@@ -142,6 +142,16 @@ The project uses Swagger for API documentation. You can access the Swagger UI at
 
 This provides interactive documentation of all API endpoints, including request parameters, responses, and other details.
 
+## Database Design
+
+- **URL**: `https://dbdiagram.io/d/66c3a6348b4bb5230e84b5c2`
+
+![DB Schema](./assets/db-design.png)
+
+## System Design High Level
+
+![ARA System Design Payment Link](./assets/ARA-System-Design-Payment-Link.png)
+
 ## Testing
 
 The project uses Jest for testing. To run tests, use:
