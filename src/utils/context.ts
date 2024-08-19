@@ -6,8 +6,8 @@ export const RequestContext = createParamDecorator(
     const request = ctx.switchToHttp().getRequest();
     const user = request.user;
     const headers = request.headers;
-    const protocol = request.protocol; // 'http' or 'https'
-    const host = request.get('host'); // e.g., 'localhost:3000'
+    const protocol = request.protocol; 
+    const host = request.get('host');
 
     // Construct the base URL
     const baseUrl = `${protocol}://${host}`;
