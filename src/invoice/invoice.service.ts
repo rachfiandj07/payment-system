@@ -8,6 +8,22 @@ import { CreateInvoiceDTO } from './dto/invoice.dto';
 export class InvoiceService {
     constructor(private readonly databaseService: DatabaseService, private readonly customerService: CustomerService) {}
 
+    public async findByID(id: string): Promise<Record<string, string> | Boolean> {
+        try {
+            const data: any = await this.databaseService.invoices.findUnique({
+                where: {
+                    id
+                }
+            })
+
+            if (!data) return false
+
+            return data
+        } catch (error) {
+            throw new HttpException(error.message, HttpStatus.FORBIDDEN);
+        }
+    }
+
     public async create(context: ContextPayload, createInvoiceDTO: CreateInvoiceDTO) {
         console.log(createInvoiceDTO)
         try {
