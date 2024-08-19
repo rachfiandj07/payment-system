@@ -1,3 +1,3 @@
 export interface CreatePaymentLinkDTO {
-    invoices_id: string
+  invoices_id: string;
 }

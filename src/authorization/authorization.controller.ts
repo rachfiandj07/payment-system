@@ -4,10 +4,10 @@ import { LoginAdminDTO } from './dto/authorization.dto';
 
 @Controller('authorization')
 export class AuthorizationController {
-    constructor(private readonly authorizationService: AuthorizationService) {}
+  constructor(private readonly authorizationService: AuthorizationService) {}
 
-    @Post('/login/admin')
-    create(@Body() loginAdminDTO: LoginAdminDTO) {
-      return this.authorizationService.loginAsAdmin(loginAdminDTO);
-    }
+  @Post('/login/admin')
+  create(@Body() loginAdminDTO: LoginAdminDTO) {
+    return this.authorizationService.loginAsAdmin(loginAdminDTO);
+  }
 }

@@ -7,10 +7,10 @@ import { BullModule } from '@nestjs/bullmq';
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: 'invoicecheck'
-    })
+      name: 'invoicecheck',
+    }),
   ],
   controllers: [InvoiceController],
-  providers: [InvoiceService, CustomerService]
+  providers: [InvoiceService, CustomerService],
 })
 export class InvoiceModule {}

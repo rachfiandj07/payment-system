@@ -1,15 +1,16 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Inject } from '@nestjs/common';
 
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(private JwtService: JwtService, @Inject (ConfigService) private readonly configService: ConfigService) {
+  constructor(
+    @Inject(ConfigService) private readonly configService: ConfigService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.getOrThrow('CLIENT_CREDENTIALS')
+      secretOrKey: configService.getOrThrow('CLIENT_CREDENTIALS'),
     });
   }
 
@@ -19,17 +20,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       exp: payload.exp,
       email: payload.email,
       id: payload.id,
-      role: payload.role
+      role: payload.role,
     };
-  }
-
-  private verifyToken(token: string): boolean {
-    try {
-      this.JwtService.verify(token);
-      return true;
-    } catch (error) {
-      return false;
-    }
   }
 
   private isTokenExpired(expirationTime: number): boolean {

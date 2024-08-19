@@ -10,13 +10,19 @@ import { PaymentConsumer } from './payment.process';
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: 'paymentcheck'
+      name: 'paymentcheck',
     }),
     BullModule.registerQueue({
-      name: 'invoicecheck'
-    })
+      name: 'invoicecheck',
+    }),
   ],
   controllers: [PaymentController],
-  providers: [PaymentService, HashService, InvoiceService, CustomerService, PaymentConsumer]
+  providers: [
+    PaymentService,
+    HashService,
+    InvoiceService,
+    CustomerService,
+    PaymentConsumer,
+  ],
 })
 export class PaymentModule {}

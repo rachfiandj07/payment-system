@@ -7,20 +7,24 @@ import { CreateInvoiceDTO } from './dto/invoice.dto';
 
 @Controller('invoice')
 export class InvoiceController {
-    constructor(private readonly invoiceService: InvoiceService) {}
+  constructor(private readonly invoiceService: InvoiceService) {}
 
-    @Post('/create')
-    @UseGuards(JwtGuard)
-    create(@Body() createInvoiceDTO: CreateInvoiceDTO, @RequestContext() context: ContextPayload) {
-      return this.invoiceService.create(context, createInvoiceDTO);
-    }
+  @Post('/create')
+  @UseGuards(JwtGuard)
+  create(
+    @Body() createInvoiceDTO: CreateInvoiceDTO,
+    @RequestContext() context: ContextPayload,
+  ) {
+    return this.invoiceService.create(context, createInvoiceDTO);
+  }
 
-    @Get()
-    @UseGuards(JwtGuard)
-    async getInvoice(
-      @Query('search') search?: string,
-      @Query('status') status?: 'PAID' | 'PENDING' | 'PARTIALLY_PAID' | 'ON_DUE_DATE'
-    ) {
-      return this.invoiceService.getInvoice({ search, status });
-    }
+  @Get()
+  @UseGuards(JwtGuard)
+  async getInvoice(
+    @Query('search') search?: string,
+    @Query('status')
+    status?: 'PAID' | 'PENDING' | 'PARTIALLY_PAID' | 'ON_DUE_DATE',
+  ) {
+    return this.invoiceService.getInvoice({ search, status });
+  }
 }

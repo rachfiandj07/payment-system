@@ -6,19 +6,24 @@ import { HashService } from 'src/utils/hash';
 import { AdminService } from 'src/admin/admin.service';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PassportModule, PassportStrategy } from '@nestjs/passport';
 
 @Module({
   imports: [
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('CLIENT_CREDENTIALS')
+        secret: configService.get<string>('CLIENT_CREDENTIALS'),
       }),
       inject: [ConfigService],
     }),
   ],
   controllers: [AuthorizationController],
-  providers: [AuthorizationService, JwtService, HashService, AdminService, JwtStrategy],
+  providers: [
+    AuthorizationService,
+    JwtService,
+    HashService,
+    AdminService,
+    JwtStrategy,
+  ],
 })
 export class AuthorizationModule {}

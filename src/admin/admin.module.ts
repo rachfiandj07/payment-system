@@ -5,6 +5,6 @@ import { HashService } from 'src/utils/hash';
 
 @Module({
   controllers: [AdminController],
-  providers: [AdminService, HashService]
+  providers: [AdminService, HashService],
 })
 export class AdminModule {}

@@ -1,17 +1,17 @@
 export interface UserContextPayload {
-    iat: number;
-    exp: number;
-    email: string; 
-    id: string;
-    role: string;
+  iat: number;
+  exp: number;
+  email: string;
+  id: string;
+  role: string;
 }
 
 export interface HeadersContextPayload {
-    authorization: string;
+  authorization: string;
 }
 
 export interface ContextPayload {
-    user: UserContextPayload
-    header: HeadersContextPayload
-    baseUrl: string
+  user: UserContextPayload;
+  header: HeadersContextPayload;
+  baseUrl: string;
 }
