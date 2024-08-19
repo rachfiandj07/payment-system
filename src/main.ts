@@ -7,14 +7,23 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
 
   const config = new DocumentBuilder()
+    .addBearerAuth()
     .setTitle('Ara Research')
     .setDescription(
       'Micro Lending Company Accounts Receivable Management System',
     )
     .setVersion('1.0')
+    .addGlobalParameters({
+      in: 'header',
+      required: true,
+      name: 'platform',
+      schema: {
+        example: 'ara-client-app',
+      },
+    })
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup('api-docs', app, document);
 
   await app.listen(3000);
 }

@@ -2,8 +2,7 @@
 
 ## Description
 
-This is a NestJS project built with TypeScript for Micro Lending Company's Accounts Receivable Management System. Build the backend API services for a micro-lending company's web application, optimizing their accounts receivable
-management.
+This is a NestJS project built with TypeScript for a Micro Lending Company's Accounts Receivable Management System. It builds backend API services for a micro-lending company's web application, optimizing their accounts receivable management.
 
 ## Features
 
@@ -13,6 +12,7 @@ management.
 - **BullMQ**: For handling background jobs and queues.
 - **Redis**: In-memory data structure store used for caching and queuing.
 - **Docker**: For containerizing the application and its dependencies.
+- **Swagger**: API documentation available at `/api-docs`.
 
 ## Table of Contents
 
@@ -62,7 +62,15 @@ Before you begin, ensure you have met the following requirements:
     REDIS_PORT=6379
     ```
 
-4. **Run Docker Compose:**
+4. **Run migrations:**
+
+    Apply database migrations using Prisma:
+
+    ```bash
+    npm run migrate:start
+    ```
+
+5. **Run Docker Compose:**
 
     To start the project with Docker, run:
 
@@ -106,11 +114,33 @@ Before you begin, ensure you have met the following requirements:
     npm run build
     ```
 
-5. **Run tests:**
+5. **Run database migrations:**
+
+    - **Apply migrations:**
+
+      ```bash
+      npm run migrate:start
+      ```
+
+    - **Reset and reapply all migrations:**
+
+      ```bash
+      npm run migrate:reset
+      ```
+
+6. **Run tests:**
 
     ```bash
     npm run test
     ```
+
+## API Documentation
+
+The project uses Swagger for API documentation. You can access the Swagger UI at:
+
+- **URL**: `http://localhost:3000/api-docs`
+
+This provides interactive documentation of all API endpoints, including request parameters, responses, and other details.
 
 ## Testing
 
