@@ -6,12 +6,22 @@ import { InvoiceModule } from './invoice/invoice.module';
 import { CustomerModule } from './customer/customer.module';
 import { AuthorizationModule } from './authorization/authorization.module';
 import { DatabaseModule } from './database/database.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PaymentModule } from './payment/payment.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true}),
+    BullModule.forRootAsync({
+      useFactory: async (configService: ConfigService) => ({
+        connection: {
+          host: configService.get<string>('REDIS_URL', 'localhost'),
+          port: configService.get<number>('REDIS_PORT', 6379),
+        },
+      }),
+      inject: [ConfigService],
+    }),
     AdminModule, InvoiceModule, CustomerModule, AuthorizationModule, DatabaseModule, PaymentModule
   ],
   controllers: [AppController],
